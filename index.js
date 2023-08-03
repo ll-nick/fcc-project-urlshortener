@@ -53,7 +53,8 @@ initializeCounter();
 // Helper functions
 const isValidUrl = urlString=> {
   try { 
-    return Boolean(new URL(urlString)); 
+    let url = new URL(urlString)
+    return url.protocol === 'http:' || url.protocol === 'https:';
   }
   catch(e){ 
     return false; 
@@ -71,7 +72,7 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-app.post('/api/shorturl', async function(req, res) {
+app.post('/api/shorturl', async (req, res) => {
   let url = req.body.url;
 
   if (!isValidUrl(url)) {
