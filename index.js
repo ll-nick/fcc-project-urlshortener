@@ -113,6 +113,18 @@ app.post('/api/shorturl', async function(req, res) {
 
 });
 
+app.get('/api/shorturl/:url', (req, res) => {
+  Url.findOne({short: req.params.url})
+  .then(searchResult => {
+    if (searchResult) {
+      res.redirect(searchResult.url)
+    } else {
+      res.send("Short url not in database. Please enter valid short url.")
+    }
+  })
+  .catch(err => console.error(err))
+})
+
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
 });
