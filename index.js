@@ -7,6 +7,15 @@ const app = express();
 // Basic Configuration
 const port = process.env.PORT || 3000;
 
+const isValidUrl = urlString=> {
+  try { 
+    return Boolean(new URL(urlString)); 
+  }
+  catch(e){ 
+    return false; 
+  }
+}
+
 app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -20,6 +29,10 @@ app.get('/', function(req, res) {
 
 // Your first API endpoint
 app.post('/api/shorturl', function(req, res) {
+  if (!isValidUrl(req.body.url)) {
+    res.json({error: 'invalid url'})
+  }
+
   res.json({
     original_url: req.body.url
   })
