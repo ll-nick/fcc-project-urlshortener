@@ -115,7 +115,12 @@ app.post('/api/shorturl', async (req, res) => {
 });
 
 app.get('/api/shorturl/:url', (req, res) => {
-  Url.findOne({short: req.params.url})
+  let url = req.params.url;
+  if (!url.match(/^[0-9]+$/)) {
+    res.send("Short url must be an integer.")
+  } 
+  
+  Url.findOne({short: url})
   .then(searchResult => {
     if (searchResult) {
       res.redirect(searchResult.url)
