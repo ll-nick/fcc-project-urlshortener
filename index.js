@@ -115,21 +115,23 @@ app.post('/api/shorturl', async (req, res) => {
 
 });
 
-app.get('/api/shorturl/:url', (req, res) => {
+app.get('/api/shorturl/:url', async (req, res) => {
   let url = req.params.url;
   if (!url.match(/^[0-9]+$/)) {
     res.send("Short url must be an integer.")
-  } 
+  }
   
-  Url.findOne({short: url})
-  .then(searchResult => {
-    if (searchResult) {
-      res.redirect(searchResult.url)
+  try {
+    let databaseEntry = await Url.findOne({short: url})
+
+    if (databaseEntry) {
+      res.redirect(databaseEntry.url)
     } else {
       res.send("Short url not in database. Please enter valid short url.")
     }
-  })
-  .catch(err => console.error(err))
+  } catch(err) {
+    console.error(err)
+  }
 })
 
 app.listen(port, function() {
