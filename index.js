@@ -2,55 +2,17 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
-const mongoose = require('mongoose');
+
+const { Url } = require('./db');
+const initializeCounter = require('./initializeCounter');
 
 const app = express();
 
-
 // Basic Configuration
 const port = process.env.PORT || 3000;
-mongoose.connect(process.env.MONGO_DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log("Connected to database")
-
-const counterSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  value: { type: Number, default: 0 }
-});
-
-const urlSchema = new mongoose.Schema({
-  url: {type: String, unique: true},
-  short: { type: Number, unique: true }
-});
-
-async function initializeCounter() {
-  try {
-    const existingCounter = await Counter.findOne({ name: 'urlShortCounter' });
-    if (!existingCounter) {
-      const newCounter = new Counter({ name: 'urlShortCounter' });
-      await newCounter.save();
-    }
-    console.log('Counter initialized.');
-  } catch (error) {
-    console.error('Error initializing counter:', error);
-  }
-}
-
-urlSchema.pre('save', async function (next) {
-  try {
-    const counter = await Counter.findOneAndUpdate({ name: 'urlShortCounter' }, { $inc: { value: 1 } });
-    this.short = counter.value;
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
-
-const Counter = mongoose.model('Counter', counterSchema);
-const Url = mongoose.model('Url', urlSchema);
 
 initializeCounter();
 
-// Helper functions
 const isValidUrl = urlString=> {
   try { 
     let url = new URL(urlString)
