@@ -26,4 +26,14 @@ urlSchema.pre('save', async function (next) {
 const Counter = mongoose.model('Counter', counterSchema);
 const Url = mongoose.model('Url', urlSchema);
 
-module.exports = { Counter, Url };
+async function saveNewUrl(url) {
+    try {
+      const newUrl = new Url({ url: url });
+      await newUrl.save();
+      return newUrl;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+module.exports = { Counter, Url, saveNewUrl };

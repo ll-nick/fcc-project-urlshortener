@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
 
-const { Url } = require('./db');
+const { Url, saveNewUrl } = require('./db');
 const initializeCounter = require('./initializeCounter');
 
 const app = express();
@@ -53,22 +53,12 @@ app.post('/api/shorturl', async (req, res) => {
         short_url: existingUrl.short
       });
     } else {
+      const newUrl = await saveNewUrl(url);
 
-      const newUrl = new Url({
-        url: url
-      });
-      
-      // Save the new URL object
-      newUrl.save((err, savedUrl) => {
-        if (err) {
-          console.error(err);
-        } else {
-          res.json({
-            original_url: newUrl.url,
-            short_url: newUrl.short
-          })
-        }
-      });
+      res.json({
+        original_url: newUrl.url,
+        short_url: newUrl.short
+      })
     }
   } catch (err) {
     console.error(err);
